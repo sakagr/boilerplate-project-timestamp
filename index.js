@@ -23,13 +23,23 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get('/api', (req, res) => {
+    res.json(getDateObject(new Date()));
+});
+
 app.get('/api/:date', (req, res) => {
-    let date = req.params.date.trim();
-    let dateObj;
-    if(date.includes('-') || date.includes(' '))
-        dateObj = getDateObject(new Date(req.params.date));
+    let dateParam = req.params.date.trim();
+    let date, dateObj;
+    if(dateParam.length === 0) dateObj = getDateObject(new Date());
+    if(dateParam.includes('-') || dateParam.includes(' '))
+        date = new Date(dateParam);
     else
-        dateObj = getDateObject(new Date(Number(req.params.date)));
+        date = new Date(Number(dateParam));
+    
+    if (date.valueOf().toString() === 'NaN') {
+        dateObj = {error: date.toString()};
+    }
+    else dateObj = getDateObject(date);
 
     res.json(dateObj);
 });
